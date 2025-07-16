@@ -1,0 +1,18 @@
+# Python 缓存文件
+__pycache__/
+*.pyc
+
+# 图片视频文件
+*.jpg
+*.jpeg
+*.png
+*.mp4
+
+# 项目生成的文件夹
+captures/
+cropped_objects/
+Log/
+
+# 模型文件 (通常很大，不建议直接上传到Git)
+*.dlc
+*.pt

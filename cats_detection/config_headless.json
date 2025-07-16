@@ -1,0 +1,19 @@
+{
+  "dlc_path": "/home/fibo/Cats_detection_project/cats_detection/cats_detection.dlc",
+  "video_device": "/dev/video2",
+  "crop_save_dir": "/home/fibo/Cats_detection_project/cats_detection/cropped_objects",
+  "model_input_name": "images",
+  "model_output_name": "output0",
+  "model_input_shape": [640, 640],
+  "num_classes": 1,
+  "class_names": ["cat"],
+  "conf_threshold": 0.5,
+  "iou_threshold": 0.45,
+  "display_window": false,
+  "save_cropped_objects": true,
+  "fps_limit": 30,
+  "camera_width": 640,
+  "camera_height": 480,
+  "log_detections": true,
+  "save_detection_log": true
+}
