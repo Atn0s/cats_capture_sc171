@@ -15,5 +15,8 @@
   "camera_width": 640,
   "camera_height": 480,
   "log_detections": true,
-  "save_detection_log": true
+  "save_detection_log": true,
+  "sustained_detection_frames_threshold": 20,
+  "capture_cooldown_seconds": 80,
+  "video_duration_seconds": 20
 }

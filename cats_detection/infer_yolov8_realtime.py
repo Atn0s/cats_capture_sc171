@@ -27,15 +27,18 @@ IOU_THRESHOLD = 0.45
 
 # --- 新增：实时捕捉与自动拍摄配置 ---
 # USB摄像头ID，通常为 0
-CAMERA_ID = 2 
+CAMERA_ID = 2
 # 结果保存目录
 SAVE_DIR = "/home/fibo/Cats_detection_project/cats_detection/captures"
-# 持续捕获到目标的帧数阈值（避免误识别触发拍摄）
-SUSTAINED_DETECTION_FRAMES_THRESHOLD = 20 
-# 完成拍摄后的冷却时间（秒）
-CAPTURE_COOLDOWN_SECONDS = 80
-# 视频拍摄时长（秒）
-VIDEO_DURATION_SECONDS = 20
+
+# 从config.json加载参数
+import json
+with open('cats_detection/config.json', 'r') as f:
+    config = json.load(f)
+
+SUSTAINED_DETECTION_FRAMES_THRESHOLD = config['sustained_detection_frames_threshold']
+CAPTURE_COOLDOWN_SECONDS = config['capture_cooldown_seconds']
+VIDEO_DURATION_SECONDS = config['video_duration_seconds']
 
 
 # ==============================================================================
@@ -125,25 +128,27 @@ try:
         is_cooldown_over = (time.time() - last_capture_time) > CAPTURE_COOLDOWN_SECONDS
         is_sustained_detection = detection_counter >= SUSTAINED_DETECTION_FRAMES_THRESHOLD
 
-        if is_sustained_detection and is_cooldown_over and not is_recording:
-            # --- 触发拍照和录像 ---
+        # 仅在第一次检测到猫时拍照
+        if detection_counter == 1 and is_cooldown_over:
             timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            # (1) 拍摄图片
             photo_path = os.path.join(SAVE_DIR, f"photo_{timestamp_str}.jpg")
             cv2.imwrite(photo_path, frame_bgr)
-            print(f"✅ Sustained target detected! Photo saved to: {photo_path}")
+            print(f"✅ Cat detected! Photo saved to: {photo_path}")
 
-            # (2) 开始10秒视频拍摄
+        if is_sustained_detection and is_cooldown_over and not is_recording:
+            # --- 触发录像 ---
+            timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            # (2) 开始视频拍摄
             video_path = os.path.join(SAVE_DIR, f"video_{timestamp_str}.mp4")
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v') # 或者 'XVID' for .avi
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             video_writer = cv2.VideoWriter(video_path, fourcc, fps, (frame_width, frame_height))
             is_recording = True
             video_start_time = time.time()
             print(f"🎥 Starting {VIDEO_DURATION_SECONDS}-second video recording to: {video_path}")
 
             # 更新冷却计时器
-            last_capture_time = time.time() 
+            last_capture_time = time.time()
             # 重置检测计数器，防止在本次录像期间再次触发
             detection_counter = 0
 
